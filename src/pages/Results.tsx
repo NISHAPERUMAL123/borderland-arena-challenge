@@ -43,7 +43,7 @@ const Results = () => {
         </div>
 
         {/* Round breakdown */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-4 gap-3 mb-6">
           {state.roundScores.map((score, i) => (
             <div key={i} className="glass-card p-3">
               <p className="font-display text-xs text-muted-foreground uppercase">R{i + 1}</p>
