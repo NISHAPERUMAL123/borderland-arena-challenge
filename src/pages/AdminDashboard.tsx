@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { generateGameCode } from "@/lib/supabase";
+import AdminScoreboard from "@/components/AdminScoreboard";
 
 interface Question {
   id?: string;
@@ -247,68 +248,76 @@ const AdminDashboard = () => {
 
         {/* Questions Editor */}
         {session && (
-          <motion.div className="glass-card p-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
-            <h2 className="font-display text-xs uppercase tracking-wider text-muted-foreground mb-4">Questions Editor</h2>
+          <>
+            <motion.div className="glass-card p-6" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+              <h2 className="font-display text-xs uppercase tracking-wider text-muted-foreground mb-4">Questions Editor</h2>
 
-            {/* Round Tabs */}
-            <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
-              {roundInfo.map((r) => (
-                <button
-                  key={r.num}
-                  onClick={() => setActiveRound(r.num)}
-                  className={`shrink-0 px-4 py-2 rounded-lg font-display text-xs uppercase tracking-wider transition-colors ${
-                    activeRound === r.num
-                      ? "bg-primary text-primary-foreground"
-                      : "border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                  }`}
-                >
-                  R{r.num}: {r.name}
-                </button>
-              ))}
-            </div>
-
-            {/* Round description */}
-            <p className="text-muted-foreground font-body text-sm mb-4">
-              {roundInfo[activeRound - 1].desc}
-              {activeRound === 4 && <span className="ml-2 text-primary font-display text-xs uppercase">[Text answer — no options]</span>}
-            </p>
-
-            {/* Question List */}
-            <div className="space-y-3">
-              {roundQuestions.map((q, idx) => (
-                <motion.div
-                  key={q.id || idx}
-                  className="glass-card p-4 flex items-start gap-4"
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <div className="w-8 h-8 rounded bg-primary/20 text-primary flex items-center justify-center font-display text-sm shrink-0">
-                    {idx + 1}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-body text-foreground text-sm mb-1">{q.question_text}</p>
-                    {q.options && (
-                      <div className="flex flex-wrap gap-1 mb-1">
-                        {q.options.map((opt) => (
-                          <span key={opt} className={`text-xs px-2 py-0.5 rounded font-body ${opt === q.correct_answer ? "bg-emerald-500/20 text-emerald-400" : "bg-secondary text-muted-foreground"}`}>
-                            {opt}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <p className="text-xs font-body text-emerald-400">✓ {q.correct_answer}</p>
-                  </div>
+              {/* Round Tabs */}
+              <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+                {roundInfo.map((r) => (
                   <button
-                    onClick={() => openEdit(q)}
-                    className="shrink-0 px-3 py-1.5 border border-border rounded font-body text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                    key={r.num}
+                    onClick={() => setActiveRound(r.num)}
+                    className={`shrink-0 px-4 py-2 rounded-lg font-display text-xs uppercase tracking-wider transition-colors ${
+                      activeRound === r.num
+                        ? "bg-primary text-primary-foreground"
+                        : "border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                    }`}
                   >
-                    Edit
+                    R{r.num}: {r.name}
                   </button>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+                ))}
+              </div>
+
+              {/* Round description */}
+              <p className="text-muted-foreground font-body text-sm mb-4">
+                {roundInfo[activeRound - 1].desc}
+                {activeRound === 4 && <span className="ml-2 text-primary font-display text-xs uppercase">[Text answer — no options]</span>}
+              </p>
+
+              {/* Question List */}
+              <div className="space-y-3">
+                {roundQuestions.map((q, idx) => (
+                  <motion.div
+                    key={q.id || idx}
+                    className="glass-card p-4 flex items-start gap-4"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                  >
+                    <div className="w-8 h-8 rounded bg-primary/20 text-primary flex items-center justify-center font-display text-sm shrink-0">
+                      {idx + 1}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-body text-foreground text-sm mb-1">{q.question_text}</p>
+                      {q.options && (
+                        <div className="flex flex-wrap gap-1 mb-1">
+                          {q.options.map((opt) => (
+                            <span key={opt} className={`text-xs px-2 py-0.5 rounded font-body ${opt === q.correct_answer ? "bg-emerald-500/20 text-emerald-400" : "bg-secondary text-muted-foreground"}`}>
+                              {opt}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <p className="text-xs font-body text-emerald-400">✓ {q.correct_answer}</p>
+                    </div>
+                    <button
+                      onClick={() => openEdit(q)}
+                      className="shrink-0 px-3 py-1.5 border border-border rounded font-body text-xs text-muted-foreground hover:border-primary hover:text-primary transition-colors"
+                    >
+                      Edit
+                    </button>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Scoreboard */}
+            <motion.div className="glass-card p-6 mt-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>
+              <h2 className="font-display text-xs uppercase tracking-wider text-muted-foreground mb-4">Live Scoreboard</h2>
+              <AdminScoreboard sessionId={session.id} />
+            </motion.div>
+          </>
         )}
       </div>
 

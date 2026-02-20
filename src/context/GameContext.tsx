@@ -32,6 +32,8 @@ export interface GameState {
   totalScore: number;
   selectedSuit: string | null;
   roundScores: number[];
+  roundTimes: number[];
+  roundStartTime: number | null;
   gameStarted: boolean;
   gameOver: boolean;
   showElimination: boolean;
@@ -65,6 +67,8 @@ const initialState: GameState = {
   totalScore: 0,
   selectedSuit: null,
   roundScores: [],
+  roundTimes: [],
+  roundStartTime: null,
   gameStarted: false,
   gameOver: false,
   showElimination: false,
@@ -110,6 +114,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       currentQuestionIndex: 0,
       score: 0,
       selectedSuit: null,
+      roundStartTime: Date.now(),
     }));
   }, [state.currentRound, state.sessionQuestions]);
 
@@ -131,11 +136,16 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   const finishRound = useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      totalScore: prev.totalScore + prev.score,
-      roundScores: [...prev.roundScores, prev.score],
-    }));
+    setState((prev) => {
+      const elapsed = prev.roundStartTime ? (Date.now() - prev.roundStartTime) / 1000 : 0;
+      return {
+        ...prev,
+        totalScore: prev.totalScore + prev.score,
+        roundScores: [...prev.roundScores, prev.score],
+        roundTimes: [...prev.roundTimes, Math.round(elapsed * 100) / 100],
+        roundStartTime: null,
+      };
+    });
   }, []);
 
   const eliminateMember = useCallback((): string | null => {

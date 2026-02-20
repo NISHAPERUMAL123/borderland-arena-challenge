@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useGame } from "@/context/GameContext";
+import { formatTime } from "@/lib/scoreboard";
 
 const Results = () => {
   const navigate = useNavigate();
@@ -48,6 +49,7 @@ const Results = () => {
             <div key={i} className="glass-card p-3">
               <p className="font-display text-xs text-muted-foreground uppercase">R{i + 1}</p>
               <p className="font-display text-lg font-bold text-foreground">{score}</p>
+              <p className="font-body text-xs text-muted-foreground">{formatTime(state.roundTimes[i] || 0)}</p>
             </div>
           ))}
         </div>
@@ -72,6 +74,17 @@ const Results = () => {
             ))}
           </div>
         </div>
+
+        {state.gameSession && (
+          <motion.button
+            className="w-full py-3 mb-3 border border-primary/50 rounded-xl font-display text-sm uppercase tracking-wider text-primary hover:bg-primary/10 transition-colors"
+            onClick={() => navigate("/scoreboard")}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+          >
+            VIEW SCOREBOARD
+          </motion.button>
+        )}
 
         <motion.button
           className="btn-game w-full text-lg"
