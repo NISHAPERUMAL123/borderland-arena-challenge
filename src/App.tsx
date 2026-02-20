@@ -8,6 +8,7 @@ import CodeEntry from "./pages/CodeEntry";
 import TeamSetup from "./pages/TeamSetup";
 import GameDashboard from "./pages/GameDashboard";
 import Results from "./pages/Results";
+import Scoreboard from "./pages/Scoreboard";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/setup" element={<TeamSetup />} />
             <Route path="/game" element={<GameDashboard />} />
             <Route path="/results" element={<Results />} />
+            <Route path="/scoreboard" element={<Scoreboard />} />
             <Route path="/admin-login" element={<AdminLogin />} />
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="*" element={<NotFound />} />

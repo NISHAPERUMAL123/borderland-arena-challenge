@@ -82,6 +82,44 @@ export type Database = {
           },
         ]
       }
+      team_results: {
+        Row: {
+          created_at: string
+          id: string
+          round_number: number
+          score: number
+          session_id: string
+          team_name: string
+          time_spent_seconds: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          round_number: number
+          score?: number
+          session_id: string
+          team_name: string
+          time_spent_seconds?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          round_number?: number
+          score?: number
+          session_id?: string
+          team_name?: string
+          time_spent_seconds?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_results_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string

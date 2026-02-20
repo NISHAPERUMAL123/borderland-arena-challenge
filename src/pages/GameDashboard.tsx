@@ -7,6 +7,7 @@ import SuitSelector from "@/components/SuitSelector";
 import MemberList from "@/components/MemberList";
 import Timer from "@/components/Timer";
 import EliminationOverlay from "@/components/EliminationOverlay";
+import { saveRoundResult, formatTime } from "@/lib/scoreboard";
 
 const roundNames = ["", "Entry Game", "Mind Trap", "Betrayal Stage", "Final Showdown"];
 const roundDescriptions = [
@@ -75,7 +76,19 @@ const GameDashboard = () => {
     }
   }, [phase, selectedAnswer, state.currentQuestionIndex, state.currentQuestions.length, finishRound, nextQuestion]);
 
-  const handlePostRound = () => {
+  const handlePostRound = async () => {
+    // Save round result to DB
+    if (state.gameSession?.id) {
+      const lastRoundTime = state.roundTimes[state.roundTimes.length - 1] || 0;
+      await saveRoundResult(
+        state.gameSession.id,
+        state.teamName,
+        state.currentRound,
+        state.score,
+        lastRoundTime
+      );
+    }
+
     const elimThreshold = 50;
     const elimCount = state.currentRound === 3 || state.currentRound === 4 ? 2 : 1;
 
