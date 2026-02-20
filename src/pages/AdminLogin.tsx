@@ -35,16 +35,6 @@ const AdminLogin = () => {
         return;
       }
       if (data.user) {
-        // Assign admin role
-        const { error: roleError } = await supabase.from("user_roles").insert({
-          user_id: data.user.id,
-          role: "admin",
-        });
-        if (roleError) {
-          setError("Account created but role assignment failed: " + roleError.message);
-          setLoading(false);
-          return;
-        }
         setMessage("Account created! Check your email to confirm, then log in.");
         setMode("login");
       }
