@@ -71,23 +71,14 @@ const AdminDashboard = () => {
 
   const loadData = useCallback(async () => {
     setLoading(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { navigate("/admin-login"); return; }
-    setUserEmail(user.email || "");
-
-    // Check admin role
-    const { data: roleData } = await supabase.from("user_roles").select("role").eq("user_id", user.id).single();
-    if (!roleData || roleData.role !== "admin") {
-      await supabase.auth.signOut();
-      navigate("/admin-login");
-      return;
-    }
+    const isAdmin = localStorage.getItem("admin_authenticated") === "true";
+    if (!isAdmin) { navigate("/admin-login"); return; }
+    setUserEmail(localStorage.getItem("admin_email") || "");
 
     // Load active session
     const { data: sessionData } = await supabase
       .from("game_sessions")
       .select("*")
-      .eq("admin_id", user.id)
       .eq("is_active", true)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -110,11 +101,9 @@ const AdminDashboard = () => {
 
   const createSession = async () => {
     setCreatingSession(true);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
 
     // Deactivate old sessions
-    await supabase.from("game_sessions").update({ is_active: false }).eq("admin_id", user.id);
+    await supabase.from("game_sessions").update({ is_active: false }).eq("is_active", true);
 
     let code = generateGameCode();
     let attempts = 0;
@@ -127,7 +116,7 @@ const AdminDashboard = () => {
 
     const { data: newSession, error } = await supabase
       .from("game_sessions")
-      .insert({ game_code: code, admin_id: user.id, is_active: true })
+      .insert({ game_code: code, admin_id: "admin", is_active: true })
       .select()
       .single();
 
@@ -174,8 +163,9 @@ const AdminDashboard = () => {
 
   const roundQuestions = questions.filter((q) => q.round_number === activeRound);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
+  const handleLogout = () => {
+    localStorage.removeItem("admin_authenticated");
+    localStorage.removeItem("admin_email");
     navigate("/admin-login");
   };
 
@@ -258,11 +248,10 @@ const AdminDashboard = () => {
                   <button
                     key={r.num}
                     onClick={() => setActiveRound(r.num)}
-                    className={`shrink-0 px-4 py-2 rounded-lg font-display text-xs uppercase tracking-wider transition-colors ${
-                      activeRound === r.num
-                        ? "bg-primary text-primary-foreground"
-                        : "border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
-                    }`}
+                    className={`shrink-0 px-4 py-2 rounded-lg font-display text-xs uppercase tracking-wider transition-colors ${activeRound === r.num
+                      ? "bg-primary text-primary-foreground"
+                      : "border border-border text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                      }`}
                   >
                     R{r.num}: {r.name}
                   </button>

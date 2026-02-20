@@ -1,21 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { supabase } from "@/integrations/supabase/client";
+
+const ADMIN_EMAIL = "admin@borderland.arena";
+const ADMIN_PASSWORD = "admin@#12345";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [message, setMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setMessage("");
     setLoading(true);
 
     if (!email.trim() || !password.trim()) {
@@ -24,31 +23,12 @@ const AdminLogin = () => {
       return;
     }
 
-    if (mode === "signup") {
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email: email.trim(),
-        password,
-      });
-      if (signUpError) {
-        setError(signUpError.message);
-        setLoading(false);
-        return;
-      }
-      if (data.user) {
-        setMessage("Account created! Check your email to confirm, then log in.");
-        setMode("login");
-      }
-    } else {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password,
-      });
-      if (signInError) {
-        setError(signInError.message);
-        setLoading(false);
-        return;
-      }
+    if (email.trim() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+      localStorage.setItem("admin_authenticated", "true");
+      localStorage.setItem("admin_email", ADMIN_EMAIL);
       navigate("/admin");
+    } else {
+      setError("Invalid login credentials.");
     }
 
     setLoading(false);
@@ -65,20 +45,6 @@ const AdminLogin = () => {
         <div className="text-center mb-8">
           <h1 className="font-display text-3xl font-black text-primary neon-text mb-1">ADMIN PORTAL</h1>
           <p className="text-muted-foreground font-body text-sm">Borderland Arena Control Center</p>
-        </div>
-
-        <div className="flex rounded-lg overflow-hidden border border-border mb-6">
-          {(["login", "signup"] as const).map((m) => (
-            <button
-              key={m}
-              onClick={() => { setMode(m); setError(""); setMessage(""); }}
-              className={`flex-1 py-2 font-display text-xs uppercase tracking-wider transition-colors ${
-                mode === m ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {m === "login" ? "Login" : "Create Account"}
-            </button>
-          ))}
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -106,7 +72,6 @@ const AdminLogin = () => {
           </div>
 
           {error && <p className="text-primary text-sm font-body text-center">{error}</p>}
-          {message && <p className="text-emerald-400 text-sm font-body text-center">{message}</p>}
 
           <motion.button
             type="submit"
@@ -115,7 +80,7 @@ const AdminLogin = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            {loading ? "..." : mode === "login" ? "LOGIN" : "CREATE ADMIN ACCOUNT"}
+            {loading ? "..." : "LOGIN"}
           </motion.button>
         </form>
 
