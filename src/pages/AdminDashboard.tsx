@@ -116,9 +116,13 @@ const AdminDashboard = () => {
       attempts++;
     }
 
+    // Get current user's ID for admin_id
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setCreatingSession(false); return; }
+
     const { data: newSession, error } = await supabase
       .from("game_sessions")
-      .insert({ game_code: code, admin_id: "admin", is_active: true, is_started: false })
+      .insert({ game_code: code, admin_id: user.id, is_active: true, is_started: false })
       .select()
       .single();
 
