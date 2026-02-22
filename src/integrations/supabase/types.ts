@@ -21,6 +21,7 @@ export type Database = {
           game_code: string
           id: string
           is_active: boolean
+          is_started: boolean
         }
         Insert: {
           admin_id: string
@@ -28,6 +29,7 @@ export type Database = {
           game_code: string
           id?: string
           is_active?: boolean
+          is_started?: boolean
         }
         Update: {
           admin_id?: string
@@ -35,6 +37,7 @@ export type Database = {
           game_code?: string
           id?: string
           is_active?: boolean
+          is_started?: boolean
         }
         Relationships: []
       }
