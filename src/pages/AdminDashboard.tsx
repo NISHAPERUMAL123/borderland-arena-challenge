@@ -103,8 +103,9 @@ const AdminDashboard = () => {
   const createSession = async () => {
     setCreatingSession(true);
 
-    // Deactivate old sessions
+    // Deactivate old sessions and reset state
     await supabase.from("game_sessions").update({ is_active: false }).eq("is_active", true);
+    setQuestions([]);
 
     let code = generateGameCode();
     let attempts = 0;
