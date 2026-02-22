@@ -26,6 +26,11 @@ const CodeEntry = () => {
       setLoading(false);
       return;
     }
+    if (!session.is_started) {
+      setError("Game has not started yet. Wait for the admin to start the game.");
+      setLoading(false);
+      return;
+    }
     const { data: questions, error: qError } = await getSessionQuestions(session.id);
     if (qError || !questions || questions.length === 0) {
       setError("No questions found for this session. Ask admin to set up questions.");

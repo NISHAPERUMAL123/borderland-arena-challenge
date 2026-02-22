@@ -20,6 +20,7 @@ interface GameSession {
   id: string;
   game_code: string;
   is_active: boolean;
+  is_started: boolean;
   created_at: string;
 }
 
@@ -116,7 +117,7 @@ const AdminDashboard = () => {
 
     const { data: newSession, error } = await supabase
       .from("game_sessions")
-      .insert({ game_code: code, admin_id: "admin", is_active: true })
+      .insert({ game_code: code, admin_id: "admin", is_active: true, is_started: false })
       .select()
       .single();
 
@@ -128,6 +129,12 @@ const AdminDashboard = () => {
 
     setCreatingSession(false);
     loadData();
+  };
+
+  const startGame = async () => {
+    if (!session) return;
+    await supabase.from("game_sessions").update({ is_started: true }).eq("id", session.id);
+    setSession({ ...session, is_started: true });
   };
 
   const deactivateSession = async () => {
@@ -213,6 +220,20 @@ const AdminDashboard = () => {
                   Share this code with your players to join the game
                 </p>
               </div>
+              {!session.is_started ? (
+                <motion.button
+                  onClick={startGame}
+                  className="btn-game"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  START GAME
+                </motion.button>
+              ) : (
+                <span className="px-3 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 font-display text-xs uppercase tracking-wider">
+                  Game Live
+                </span>
+              )}
               <button
                 onClick={deactivateSession}
                 className="px-4 py-2 border border-destructive/50 text-destructive rounded-lg font-body text-sm hover:bg-destructive/10 transition-colors"

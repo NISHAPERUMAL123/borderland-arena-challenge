@@ -21,6 +21,7 @@ export interface GameSession {
   id: string;
   game_code: string;
   is_active: boolean;
+  is_started: boolean;
   created_at: string;
 }
 

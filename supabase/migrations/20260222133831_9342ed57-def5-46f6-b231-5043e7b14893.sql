@@ -1,0 +1,1 @@
+ALTER TABLE public.game_sessions ADD COLUMN is_started boolean NOT NULL DEFAULT false;
