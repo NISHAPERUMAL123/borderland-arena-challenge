@@ -5,7 +5,7 @@ import { useGame } from "@/context/GameContext";
 
 const TeamSetup = () => {
   const navigate = useNavigate();
-  const { setTeam } = useGame();
+  const { setTeam, state } = useGame();
   const [teamName, setTeamName] = useState("");
   const [members, setMembers] = useState<string[]>([""]);
   const [error, setError] = useState("");
@@ -47,6 +47,20 @@ const TeamSetup = () => {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
       >
+        {/* Show Game Code */}
+        {state.gameSession && (
+          <motion.div
+            className="mb-6 text-center"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <p className="font-display text-xs uppercase tracking-wider text-muted-foreground mb-1">Game Code</p>
+            <span className="font-display text-3xl md:text-4xl font-black text-primary neon-text tracking-[0.3em]">
+              {state.gameSession.game_code}
+            </span>
+          </motion.div>
+        )}
+
         <h2 className="font-display text-2xl md:text-3xl font-bold text-primary neon-text mb-2 text-center">
           TEAM SETUP
         </h2>
